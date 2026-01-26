@@ -1,0 +1,27 @@
+name: Keep Render App Alive
+
+on:
+  schedule:
+    # Runs every 5 minutes (UTC time)
+    - cron: '*/5 * * * *'
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Ping Render App
+      run: |
+        echo "🕐 Current time: $(date)"
+        echo "🚀 Pinging: https://valentine-pvgv.onrender.com/api/post/"
+        
+        response=$(curl -s -o /dev/null -w "%{http_code}" \
+          "https://valentine-pvgv.onrender.com/api/post/")
+        
+        if [ "$response" -eq 200 ] || [ "$response" -eq 201 ] || [ "$response" -eq 302 ]; then
+          echo "✅ Success! Response code: $response"
+        else
+          echo "❌ Unexpected response: $response"
+          exit 1
+        fi
