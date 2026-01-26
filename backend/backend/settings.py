@@ -76,6 +76,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 import dj_database_url
 
+# DATABASES = {
+#     "default": dj_database_url.parse(
+#         os.environ.get("DATABASE_URL", "postgresql://praise:UvxgpvmYdTzWC5t7YvoLIQ40ovVurfhf@dpg-d5cn3m2li9vc73cr5f20-a.virginia-postgres.render.com/cpec_db")
+#     )
+# }
 DATABASES = {
     "default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))
 }
