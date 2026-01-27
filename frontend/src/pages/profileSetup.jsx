@@ -160,8 +160,8 @@ const DollsAnimation = () => {
 
         // Increase Yes button size
         setYesSize(prev => {
-            const newWidth = prev.width * 1.5; // Reduced growth rate
-            const newHeight = prev.height * 1.5; // Reduced growth rate
+            const newWidth = prev.width * 1.9; // Reduced growth rate
+            const newHeight = prev.height * 1.9; // Reduced growth rate
 
             // Recalculate font size for Yes button
             const fontSize = Math.min(22, Math.max(16, Math.min(newWidth / 3, newHeight / 1.5)));
