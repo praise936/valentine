@@ -21,6 +21,7 @@ const Afteryes = () => {
 
 const DollsAnimation = () => {
     const ndio = { content: "the person you sent the link to has agreed to your request" }
+    const hapana = { content: "rejected so badly" }
     const [agreed, setagreed] = useState(false)
 
     const [text, setText] = useState('No');
@@ -148,6 +149,7 @@ const DollsAnimation = () => {
     const handleNO = () => {
         // Play audio
         playAudio();
+        rejecting()
 
         // Store the current Yes size as max for No button on first click
         if (isFirstNoClick) {
@@ -214,11 +216,20 @@ const DollsAnimation = () => {
             console.log('failed to send the response');
         }
     }
+    const rejecting = async () => {
+        try {
+            const sent = await api.post('post/', hapana)
+            console.log(sent)
+        } catch (error) {
+            console.log('failed to send the response');
+        }
+    }
 
     const handleYes = (e) => {
         setagreed(true)
         sending()
     };
+    
 
     const baseButtonStyle = {
         display: 'flex',

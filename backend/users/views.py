@@ -7,7 +7,7 @@ class PostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = ['id', 'content', 'created_at']
+        fields = ['id', 'content', 'created_at','reject']
     
     def get_created_at(self, obj):
         # Return formatted datetime string
@@ -22,3 +22,5 @@ class PostDeleteView(DestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [permissions.AllowAny]
+    
+    
