@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './DollsAnimation.css';
 import dolldone from '../assets/dolls.gif';
 import dollwait from '../assets/lpg.gif';
 import api from './api';
-const Afteryes = ()=>{
-    return(
+import audioFile from '../assets/audio.mp3';
+
+const Afteryes = () => {
+    return (
         <div className='container'>
             <img
                 className='gif'
@@ -16,22 +18,21 @@ const Afteryes = ()=>{
         </div>
     )
 }
+
 const DollsAnimation = () => {
-    const ndio = {content:"the person you sent the link to has agreed to your request"}
+    const ndio = { content: "the person you sent the link to has agreed to your request" }
     const [agreed, setagreed] = useState(false)
-    
+
     const [text, setText] = useState('No');
     const [textIndex, setTextIndex] = useState(0);
     const texts = [
         'No',
-        'dont do that sweetie',
         'have heart',
         'but why?',
         'i  will cry',
         'surely',
         'but i love you',
         'be kind',
-        
     ];
 
     const [yesSize, setYesSize] = useState({
@@ -46,92 +47,179 @@ const DollsAnimation = () => {
         height: 40,
         fontSize: 18,
         backgroundColor: 'red',
-        padding: '5px 10px'
+        padding: '10px 16px',
+        whiteSpace: 'nowrap',
+        lineHeight: '1.2',
+        transition: 'all 0.3s ease'
     });
 
-    // Calculate optimal font size based on button dimensions and text
-    const calculateFontSize = (width, height, text) => {
+    // Track if this is the first "No" click
+    const [isFirstNoClick, setIsFirstNoClick] = useState(true);
+    // Store the initial Yes button size to use as maximum for No button
+    const [maxNoSize, setMaxNoSize] = useState({ width: 80, height: 40 });
+
+    const audioRef = useRef(null);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
+    // Function to calculate button dimensions for a given text
+    const calculateButtonDimensions = (text, maxWidth, maxHeight, shouldShrinkHeight = false) => {
         const words = text.split(' ');
-        const longestWord = Math.max(...words.map(word => word.length));
-        const lineHeight = 1.2;
+        const longestWordLength = Math.max(...words.map(word => word.length));
 
-        // Base calculation on button dimensions
-        const widthBasedSize = (width / longestWord) * 0.8;
-        const heightBasedSize = (height / words.length) / lineHeight;
-
-        // Take the smaller of the two to ensure text fits
-        let fontSize = Math.min(widthBasedSize, heightBasedSize);
-
-        // Apply constraints
-        fontSize = Math.max(10, Math.min(24, fontSize));
-
-        return Math.floor(fontSize);
-    };
-
-    // Calculate if text should wrap
-    const shouldWrapText = (width, text) => {
-        const avgCharWidth = 8; // Approximate width of a character in pixels
+        // Calculate approximate width needed for text
+        const avgCharWidth = 8;
         const textWidth = text.length * avgCharWidth;
-        return textWidth > width * 0.8; // Wrap if text exceeds 80% of button width
+        const minPadding = 20;
+
+        // Calculate new width based on text length
+        let newWidth = textWidth + minPadding;
+        newWidth = Math.max(newWidth, 60); // Minimum width
+        newWidth = Math.min(newWidth, maxWidth); // Never exceed maxWidth
+
+        // Calculate if text should wrap
+        const shouldWrap = textWidth > newWidth * 0.7 || words.length > 1;
+
+        // Calculate height - always shrink if shouldShrinkHeight is true
+        let newHeight = maxHeight;
+        if (shouldShrinkHeight) {
+            // Continuously shrink height
+            newHeight = Math.max(25, maxHeight * 0.85); // Shrink to 85% of maxHeight, minimum 25px
+        } else if (shouldWrap) {
+            // For wrapped text, adjust height
+            const lines = words.length > 1 ? Math.min(words.length, 3) : Math.ceil(text.length / 10);
+            newHeight = 30 + (lines - 1) * 15;
+            newHeight = Math.max(25, Math.min(newHeight, maxHeight));
+        } else {
+            // For single line, maintain reasonable height
+            newHeight = Math.max(30, Math.min(40, maxHeight));
+        }
+
+        // Calculate font size
+        const calculateFontSize = (width, height, text) => {
+            const charsPerLine = shouldWrap ? Math.ceil(text.length / Math.ceil(text.length / 10)) : text.length;
+            const widthBasedSize = (width / charsPerLine) * 0.8;
+            const heightBasedSize = (height / (shouldWrap ? 1.5 : 1)) / 1.2;
+
+            let fontSize = Math.min(widthBasedSize, heightBasedSize);
+            fontSize = Math.max(10, Math.min(16, fontSize)); // Reduced max font size
+            return Math.floor(fontSize);
+        };
+
+        const newFontSize = calculateFontSize(newWidth, newHeight, text);
+
+        return {
+            width: newWidth,
+            height: newHeight,
+            fontSize: newFontSize,
+            whiteSpace: shouldWrap ? 'normal' : 'nowrap',
+            lineHeight: shouldWrap ? '1.1' : 'normal',
+            padding: shouldWrap ? '6px 10px' : '8px 12px'
+        };
     };
+
+    const playAudio = () => {
+        if (audioRef.current && !isAudioPlaying) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play()
+                .then(() => {
+                    setIsAudioPlaying(true);
+                })
+                .catch(error => {
+                    console.log("Audio play failed:", error);
+                });
+        }
+    };
+
+    useEffect(() => {
+        const audioElement = audioRef.current;
+        const handleAudioEnded = () => setIsAudioPlaying(false);
+        const handleAudioError = () => setIsAudioPlaying(false);
+
+        if (audioElement) {
+            audioElement.addEventListener('ended', handleAudioEnded);
+            audioElement.addEventListener('error', handleAudioError);
+            return () => {
+                audioElement.removeEventListener('ended', handleAudioEnded);
+                audioElement.removeEventListener('error', handleAudioError);
+            };
+        }
+    }, []);
 
     const handleNO = () => {
+        // Play audio
+        playAudio();
+
+        // Store the current Yes size as max for No button on first click
+        if (isFirstNoClick) {
+            setMaxNoSize({
+                width: Math.max(yesSize.width * 0.9, 80), // 90% of Yes button width or 80px min
+                height: Math.max(yesSize.height * 0.9, 40) // 90% of Yes button height or 40px min
+            });
+            setIsFirstNoClick(false);
+        }
+
         // Increase Yes button size
         setYesSize(prev => {
-            const newWidth = prev.width * 1.5;
-            const newHeight = prev.height * 1.5;
+            const newWidth = prev.width * 1.5; // Reduced growth rate
+            const newHeight = prev.height * 1.5; // Reduced growth rate
+
+            // Recalculate font size for Yes button
+            const fontSize = Math.min(22, Math.max(16, Math.min(newWidth / 3, newHeight / 1.5)));
+
             return {
                 ...prev,
                 width: newWidth,
                 height: newHeight,
-                fontSize: calculateFontSize(newWidth, newHeight, 'Yes'),
-                padding: `${Math.min(newHeight * 0.1, 15)}px ${Math.min(newWidth * 0.15, 20)}px`
+                fontSize: fontSize,
+                padding: `${Math.min(newHeight * 0.15, 12)}px ${Math.min(newWidth * 0.15, 20)}px`
             };
         });
 
-        // Decrease No button size but keep minimum
-        setNoSize(prev => {
-            const newWidth = Math.max(prev.width * 1.1, 60); // Increased minimum width
-            const newHeight = Math.max(prev.height * 0.1, 35); // Increased minimum height
-            const nextTextIndex = (textIndex + 1) % texts.length;
-            const newText = texts[nextTextIndex];
-            const wrapText = shouldWrapText(newWidth, newText);
+        // Update maxNoSize to ensure it's always less than Yes button size
+        setMaxNoSize(prev => ({
+            width: Math.min(prev.width, yesSize.width * 0.9), // Max 90% of Yes width
+            height: Math.max(20, prev.height * 0.85) // Shrink height by 15% each time, minimum 20px
+        }));
 
-            return {
-                ...prev,
-                width: newWidth,
-                height: wrapText ? newHeight * 1.1 : newHeight, // Increase height if wrapping needed
-                fontSize: calculateFontSize(newWidth, newHeight, newText),
-                padding: `${Math.min(newHeight * 0.1, 8)}px ${Math.min(newWidth * 0.1, 12)}px`,
-                whiteSpace: wrapText ? 'normal' : 'nowrap'
-            };
-        });
-
-        // Cycle through texts
+        // Calculate next text
         const nextIndex = (textIndex + 1) % texts.length;
+        const nextText = texts[nextIndex];
+
+        // Calculate dimensions for No button
+        const newDimensions = calculateButtonDimensions(
+            nextText,
+            maxNoSize.width,
+            maxNoSize.height,
+            true // Always shrink height
+        );
+
+        // Update No button with all properties at once
+        setNoSize(prev => ({
+            ...prev,
+            ...newDimensions,
+            backgroundColor: 'red',
+            transition: 'all 0.3s ease'
+        }));
+
+        // Update text and index
+        setText(nextText);
         setTextIndex(nextIndex);
-        setText(texts[nextIndex]);
     };
-    const sending = async()=>{
+
+    const sending = async () => {
         try {
             const sent = await api.post('post/', ndio)
             console.log(sent)
         } catch (error) {
             console.log('failed to send the response');
-            
         }
-        
     }
+
     const handleYes = (e) => {
-        
-        
         setagreed(true)
         sending()
-        
-        
     };
 
-    // Base button style
     const baseButtonStyle = {
         display: 'flex',
         alignItems: 'center',
@@ -146,16 +234,23 @@ const DollsAnimation = () => {
         boxSizing: 'border-box',
         wordWrap: 'break-word',
         overflow: 'hidden',
-        textOverflow: 'ellipsis'
+        textOverflow: 'ellipsis',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
     };
-    if (agreed){
-        return(
-            <Afteryes />
-        )
+
+    if (agreed) {
+        return <Afteryes />
     }
+
     return (
-        
         <div className='container'>
+            <audio
+                ref={audioRef}
+                src={audioFile}
+                preload="auto"
+                loop={false}
+            />
+
             <img
                 className='gif'
                 src={dollwait}
@@ -182,12 +277,12 @@ const DollsAnimation = () => {
                     style={{
                         ...baseButtonStyle,
                         width: `${noSize.width}px`,
-                        minHeight: `${noSize.height}px`,
+                        height: `${noSize.height}px`,
                         fontSize: `${noSize.fontSize}px`,
                         backgroundColor: noSize.backgroundColor,
                         padding: noSize.padding || '8px 16px',
                         whiteSpace: noSize.whiteSpace || 'nowrap',
-                        lineHeight: '1.2'
+                        lineHeight: noSize.lineHeight || '1.2'
                     }}
                     className='no'
                     onClick={handleNO}

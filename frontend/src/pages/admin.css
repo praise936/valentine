@@ -227,3 +227,54 @@
         align-self: flex-end;
     }
 }
+/* Add to your existing admin.css */
+
+.refresh-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.refresh-btn:hover {
+    background-color: #45a049;
+}
+
+.post-actions {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.delete-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.delete-btn:hover:not(:disabled) {
+    background-color: #d32f2f;
+}
+
+.delete-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.post-card {
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.post-card:hover {
+    transform: translateY(-2px);
+}
