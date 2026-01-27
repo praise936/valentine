@@ -97,7 +97,7 @@ const Admin = () => {
                 ) : (
                     <div className="posts-grid">
                         {datas.map((dat, index) => (
-                            <div key={dat.id} className="post-card">
+                            <div key={index} className="post-card">
                                 <div className="post-header">
                                     <span className="post-number">Post #{index + 1}</span>
                                     <span className="post-date">
