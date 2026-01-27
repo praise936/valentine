@@ -78,7 +78,17 @@ import dj_database_url
 
 
 DATABASES = {
-    "default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'cpec_db',
+        'USER': 'praise',
+        'PASSWORD': 'UvxgpvmYdTzWC5t7YvoLIQ40ovVurfhf',
+        'HOST': 'dpg-d5cn3m2li9vc73cr5f20-a',
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',  # Important for Render/Heroku databases
+        }
+    }
 }
 # postgresql://praise:UvxgpvmYdTzWC5t7YvoLIQ40ovVurfhf@dpg-d5cn3m2li9vc73cr5f20-a.virginia-postgres.render.com/cpec_db
 
