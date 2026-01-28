@@ -1,3 +1,4 @@
+/* DollsAnimation.css */
 .container {
     display: flex;
     flex-direction: column;
@@ -5,79 +6,315 @@
     justify-content: center;
     min-height: 100vh;
     text-align: center;
-    
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
 }
 
-.gif {
-    background: linear-gradient(135deg, #f9c5d1, #c2e9fb);
-    
+.joy-container {
+    background: linear-gradient(135deg, #fff0f5, #ffe4e9);
+    font-family: 'Segoe UI', 'Arial', sans-serif;
 }
 
-h1 {
-    color: #080808;
+.blush-container {
+    background: radial-gradient(circle at 50% 50%, #ffb6c1, #ffe4e1);
+    animation: blushPulse 3s infinite alternate;
+}
+
+@keyframes blushPulse {
+    0% {
+        background: radial-gradient(circle at 50% 50%, #ffb6c1, #ffe4e1);
+    }
+
+    100% {
+        background: radial-gradient(circle at 50% 50%, #ffccd5, #fff0f5);
+    }
+}
+
+.flower-display {
+    position: relative;
+    margin: 20px 0;
+    z-index: 2;
+}
+
+.flower-main {
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.5s ease;
+}
+
+.flower-main:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
+}
+
+.blush-indicator {
+    position: absolute;
+    top: 50px;
+    width: 300px;
+    height: 100px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.blush-circle {
+    position: absolute;
+    width: 100px;
+    height: 40px;
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.6), transparent 70%);
+    border-radius: 50%;
+    top: 20px;
+}
+
+.blush-circle.left {
+    left: 50px;
+}
+
+.blush-circle.right {
+    right: 50px;
+}
+
+.question {
     font-size: 2.5rem;
-    margin-bottom: 40px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    
+    color: #ff3366;
+    margin: 20px 0 10px;
+    font-family: 'Dancing Script', cursive;
+    text-shadow: 2px 2px 4px rgba(255, 182, 193, 0.3);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.subtext {
+    color: #ff6b9d;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    font-style: italic;
 }
 
 .buttons {
     display: flex;
     gap: 30px;
-    margin-top: 20px;
-    align-items: center;
+    margin: 30px 0;
+    position: relative;
+    z-index: 3;
 }
 
-button {
+.yes-button {
+    background: linear-gradient(135deg, #ff6b9d, #ff3366);
     border: none;
-    border-radius: 12px;
-    color: white;
-    font-weight: bold;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    font-family: 'Dancing Script', cursive;
+    position: relative;
+    overflow: hidden;
+}
+
+.yes-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 25px rgba(255, 51, 102, 0.4);
+}
+
+.yes-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: 0.5s;
+}
+
+.yes-button:hover::before {
+    left: 100%;
+}
+
+.no-button {
+    background: rgba(255, 107, 107, 0.8);
+    border: none;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    font-family: 'Arial', sans-serif;
+}
+
+.no-button:hover {
+    background: rgba(255, 87, 87, 0.9);
+    transform: translateY(-2px);
+}
+
+.heart-burst {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.heart {
+    position: absolute;
+    font-size: 1.5rem;
+    animation: floatUp 2s ease-out forwards;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) scale(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100px) scale(1.5);
+        opacity: 0;
+    }
+}
+
+.flower-petals {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.petal {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 182, 193, 0.4);
+    border-radius: 50% 50% 50% 0;
+    animation: fall 10s linear infinite;
+    transform: rotate(45deg);
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-100px) rotate(45deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh) rotate(45deg);
+        opacity: 0;
+    }
+}
+
+/* After Yes Page Styles */
+.flower-showcase {
+    position: relative;
+    margin: 30px 0;
+}
+
+.main-flower {
+    border-radius: 25px;
+    border: 8px solid white;
+    box-shadow: 0 15px 40px rgba(255, 107, 107, 0.5);
+    animation: gentlePulse 2s infinite alternate;
+}
+
+@keyframes gentlePulse {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.05);
+    }
+}
+
+.blush-text {
+    font-size: 3rem;
+    color: #ff3366;
+    margin: 20px 0;
+    background: linear-gradient(45deg, #ff3366, #ff6b9d);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: colorShift 3s infinite alternate;
+}
+
+@keyframes colorShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.romantic-message {
+    font-size: 1.5rem;
+    color: #ff6b9d;
+    margin-bottom: 30px;
+    font-family: 'Dancing Script', cursive;
+}
+
+.flower-gallery {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    box-sizing: border-box;
-    word-wrap: break-word;
-    hyphens: auto;
-}
-
-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-button:active {
-    transform: translateY(1px);
-}
-
-.yes {
-    background: linear-gradient(135deg, #4CAF50, #2E7D32);
-}
-
-.no {
-    background: linear-gradient(135deg, #f44336, #c62828);
-}
-
-/* Ensure text fits properly */
-.no {
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    line-height: 1.2;
-    display: inline-flex;
-    align-items: center;
+    gap: 20px;
+    margin: 30px 0;
+    flex-wrap: wrap;
     justify-content: center;
 }
 
-/* Responsive design */
-@media (max-width: 600px) {
-    h1 {
-        font-size: 1.8rem;
+.gallery-flower {
+    width: 120px;
+    height: 120px;
+    border-radius: 15px;
+    border: 4px solid white;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+    transition: all 0.3s ease;
+}
+
+.gallery-flower:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.5);
+}
+
+.heart-rain {
+    font-size: 2rem;
+    animation: scrollHearts 20s linear infinite;
+    white-space: nowrap;
+    margin-top: 30px;
+    opacity: 0.7;
+}
+
+@keyframes scrollHearts {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .question {
+        font-size: 2rem;
     }
 
     .buttons {
@@ -85,13 +322,32 @@ button:active {
         gap: 20px;
     }
 
-    .gif {
-        width: 150px !important;
+    .flower-main {
+        width: 180px;
     }
 
-    button {
-        min-width: 120px;
-        min-height: 45px;
-        padding: 10px 20px !important;
+    .blush-text {
+        font-size: 2.2rem;
     }
+}
+
+/* Blush intensity classes */
+.blush-level-1 {
+    background: rgba(255, 182, 193, 0.1);
+}
+
+.blush-level-2 {
+    background: rgba(255, 182, 193, 0.2);
+}
+
+.blush-level-3 {
+    background: rgba(255, 182, 193, 0.3);
+}
+
+.blush-level-4 {
+    background: rgba(255, 182, 193, 0.4);
+}
+
+.blush-level-5 {
+    background: rgba(255, 182, 193, 0.5);
 }

@@ -43,17 +43,40 @@ const Admin = () => {
     const formatDateTime = (dateString) => {
         if (!dateString) return 'No date';
         try {
+            // Parse the date string assuming it's in UTC (backend likely sends UTC)
             const date = new Date(dateString);
-            return date.toLocaleString('en-US', {
+
+            // Options for formatting in local time
+            const options = {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
-                hour12: true
-            });
+                hour12: true,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // Use local timezone
+            };
+
+            // Format using local timezone
+            return date.toLocaleString('en-US', options);
+
+            // Alternative: If you want to show both UTC and local time
+            // return `${date.toLocaleString('en-US', options)} (Local)`;
+
+            // Alternative 2: If the backend sends UTC, you can convert it
+            // const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+            // return localDate.toLocaleString('en-US', {
+            //     year: 'numeric',
+            //     month: 'short',
+            //     day: 'numeric',
+            //     hour: '2-digit',
+            //     minute: '2-digit',
+            //     second: '2-digit',
+            //     hour12: true
+            // });
         } catch (e) {
+            console.error('Error formatting date:', e);
             return dateString; // Return as-is if parsing fails
         }
     };
@@ -97,7 +120,7 @@ const Admin = () => {
                 ) : (
                     <div className="posts-grid">
                         {datas.map((dat, index) => (
-                            <div key={index} className="post-card">
+                            <div key={dat.id || index} className="post-card"> {/* Use dat.id if available */}
                                 <div className="post-header">
                                     <span className="post-number">Post #{index + 1}</span>
                                     <span className="post-date">

@@ -1,121 +1,98 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './DollsAnimation.css';
-import dolldone from '../assets/dolls.gif';
-import dollwait from '../assets/lpg.gif';
 import api from './api';
 import audioFile from '../assets/audio.mp3';
 
-const Afteryes = () => {
+// Import all the flower images
+import flower1 from '../assets/joy1.gif';  // First bouquet
+import flower2 from '../assets/joy2.gif';  // Second bouquet
+import flower3 from '../assets/joy3.gif';  // Third bouquet
+import flower4 from '../assets/joy4.jpeg'; // Special bouquet
+// import blushEffect from '../assets/blush-effect.gif'; // You might want to add a blush effect image
+
+const AfterYes = () => {
     return (
-        <div className='container'>
-            <img
-                className='gif'
-                src={dolldone}
-                alt="Dolls kissing"
-                style={{ width: "200px" }}
-            />
-            <h1>okay yay!!</h1>
+        <div className='container blush-container'>
+            <div className="flower-showcase">
+                <img
+                    className='flower-gif main-flower'
+                    src={flower4}
+                    alt="Special bouquet for Joy"
+                    style={{ width: "250px" }}
+                />
+                <div className="blush-overlay"></div>
+            </div>
+            <h1 className="blush-text">Yay! Joy said YES! 💖</h1>
+            <p className="romantic-message">Every flower here blooms just for you, my love</p>
+
+            <div className="flower-gallery">
+                <img src={flower1} alt="Bouquet 1" className="gallery-flower" />
+                <img src={flower2} alt="Bouquet 2" className="gallery-flower" />
+                <img src={flower3} alt="Bouquet 3" className="gallery-flower" />
+            </div>
+
+            <div className="heart-rain">💖🌸🌹💐🌺🌷💖</div>
         </div>
     )
 }
 
 const DollsAnimation = () => {
-    const ndio = { content: "the person you sent the link to has agreed to your request" }
-    const hapana = { content: "rejected so badly" }
-    const [agreed, setagreed] = useState(false)
+    const ndio = { content: "Joy has agreed to be my Valentine! 🌸💖" }
+    const hapana = { content: "Joy is being shy... but we know she'll say yes! 😊" }
+    const [agreed, setAgreed] = useState(false)
+    const [blushLevel, setBlushLevel] = useState(0)
+    const [currentFlower, setCurrentFlower] = useState(flower1)
+    const [showHearts, setShowHearts] = useState(false)
 
     const [text, setText] = useState('No');
     const [textIndex, setTextIndex] = useState(0);
     const texts = [
         'No',
-        'have heart',
-        'but why?',
-        'i  will cry',
-        'surely',
-        'but i love you',
-        'be kind',
+        'Are you sure?',
+        'Think again!',
+        'I made these flowers for you',
+        'Pretty please?',
+        'My heart beats for you',
+        'Say yes, Joy! 💖',
     ];
 
     const [yesSize, setYesSize] = useState({
-        width: 80,
-        height: 40,
-        fontSize: 18,
-        backgroundColor: 'rgb(18, 203, 18)'
+        width: 100,
+        height: 50,
+        fontSize: 20,
+        backgroundColor: 'linear-gradient(135deg, #ff6b9d, #ff3366)',
+        boxShadow: '0 4px 15px rgba(255, 51, 102, 0.3)'
     });
 
     const [noSize, setNoSize] = useState({
         width: 80,
         height: 40,
         fontSize: 18,
-        backgroundColor: 'red',
+        backgroundColor: 'rgba(255, 107, 107, 0.8)',
         padding: '10px 16px',
         whiteSpace: 'nowrap',
         lineHeight: '1.2',
         transition: 'all 0.3s ease'
     });
 
-    // Track if this is the first "No" click
     const [isFirstNoClick, setIsFirstNoClick] = useState(true);
-    // Store the initial Yes button size to use as maximum for No button
     const [maxNoSize, setMaxNoSize] = useState({ width: 80, height: 40 });
 
     const audioRef = useRef(null);
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+    const containerRef = useRef(null);
 
-    // Function to calculate button dimensions for a given text
-    const calculateButtonDimensions = (text, maxWidth, maxHeight, shouldShrinkHeight = false) => {
-        const words = text.split(' ');
-        const longestWordLength = Math.max(...words.map(word => word.length));
+    // Blush effect whenever Joy interacts
+    const triggerBlush = () => {
+        setBlushLevel(prev => Math.min(prev + 1, 10));
+        setShowHearts(true);
 
-        // Calculate approximate width needed for text
-        const avgCharWidth = 8;
-        const textWidth = text.length * avgCharWidth;
-        const minPadding = 20;
+        // Cycle through flowers on each interaction
+        const flowers = [flower1, flower2, flower3, flower4];
+        const nextFlower = flowers[(flowers.indexOf(currentFlower) + 1) % flowers.length];
+        setCurrentFlower(nextFlower);
 
-        // Calculate new width based on text length
-        let newWidth = textWidth + minPadding;
-        newWidth = Math.max(newWidth, 60); // Minimum width
-        newWidth = Math.min(newWidth, maxWidth); // Never exceed maxWidth
-
-        // Calculate if text should wrap
-        const shouldWrap = textWidth > newWidth * 0.7 || words.length > 1;
-
-        // Calculate height - always shrink if shouldShrinkHeight is true
-        let newHeight = maxHeight;
-        if (shouldShrinkHeight) {
-            // Continuously shrink height
-            newHeight = Math.max(25, maxHeight * 0.85); // Shrink to 85% of maxHeight, minimum 25px
-        } else if (shouldWrap) {
-            // For wrapped text, adjust height
-            const lines = words.length > 1 ? Math.min(words.length, 3) : Math.ceil(text.length / 10);
-            newHeight = 30 + (lines - 1) * 15;
-            newHeight = Math.max(25, Math.min(newHeight, maxHeight));
-        } else {
-            // For single line, maintain reasonable height
-            newHeight = Math.max(30, Math.min(40, maxHeight));
-        }
-
-        // Calculate font size
-        const calculateFontSize = (width, height, text) => {
-            const charsPerLine = shouldWrap ? Math.ceil(text.length / Math.ceil(text.length / 10)) : text.length;
-            const widthBasedSize = (width / charsPerLine) * 0.8;
-            const heightBasedSize = (height / (shouldWrap ? 1.5 : 1)) / 1.2;
-
-            let fontSize = Math.min(widthBasedSize, heightBasedSize);
-            fontSize = Math.max(10, Math.min(16, fontSize)); // Reduced max font size
-            return Math.floor(fontSize);
-        };
-
-        const newFontSize = calculateFontSize(newWidth, newHeight, text);
-
-        return {
-            width: newWidth,
-            height: newHeight,
-            fontSize: newFontSize,
-            whiteSpace: shouldWrap ? 'normal' : 'nowrap',
-            lineHeight: shouldWrap ? '1.1' : 'normal',
-            padding: shouldWrap ? '6px 10px' : '8px 12px'
-        };
+        setTimeout(() => setShowHearts(false), 2000);
     };
 
     const playAudio = () => {
@@ -147,63 +124,85 @@ const DollsAnimation = () => {
     }, []);
 
     const handleNO = () => {
-        // Play audio
         playAudio();
-        rejecting()
+        triggerBlush();
+        rejecting();
 
-        // Store the current Yes size as max for No button on first click
         if (isFirstNoClick) {
             setMaxNoSize({
-                width: Math.max(yesSize.width * 0.9, 80), // 90% of Yes button width or 80px min
-                height: Math.max(yesSize.height * 0.9, 40) // 90% of Yes button height or 40px min
+                width: Math.max(yesSize.width * 0.9, 80),
+                height: Math.max(yesSize.height * 0.9, 40)
             });
             setIsFirstNoClick(false);
         }
 
-        // Increase Yes button size
         setYesSize(prev => {
-            const newWidth = prev.width * 1.9; // Reduced growth rate
-            const newHeight = prev.height * 1.9; // Reduced growth rate
-
-            // Recalculate font size for Yes button
-            const fontSize = Math.min(22, Math.max(16, Math.min(newWidth / 3, newHeight / 1.5)));
+            const newWidth = prev.width * 1.8;
+            const newHeight = prev.height * 1.8;
+            const fontSize = Math.min(24, Math.max(18, Math.min(newWidth / 3, newHeight / 1.5)));
 
             return {
                 ...prev,
                 width: newWidth,
                 height: newHeight,
                 fontSize: fontSize,
-                padding: `${Math.min(newHeight * 0.15, 12)}px ${Math.min(newWidth * 0.15, 20)}px`
+                padding: `${Math.min(newHeight * 0.15, 12)}px ${Math.min(newWidth * 0.15, 20)}px`,
+                backgroundColor: 'linear-gradient(135deg, #ff6b9d, #ff3366)',
+                boxShadow: `0 6px 20px rgba(255, 51, 102, ${0.3 + blushLevel * 0.1})`
             };
         });
 
-        // Update maxNoSize to ensure it's always less than Yes button size
         setMaxNoSize(prev => ({
-            width: Math.min(prev.width, yesSize.width * 0.9), // Max 90% of Yes width
-            height: Math.max(20, prev.height * 0.85) // Shrink height by 15% each time, minimum 20px
+            width: Math.min(prev.width, yesSize.width * 0.9),
+            height: Math.max(25, prev.height * 0.85)
         }));
 
-        // Calculate next text
         const nextIndex = (textIndex + 1) % texts.length;
         const nextText = texts[nextIndex];
 
-        // Calculate dimensions for No button
+        const calculateButtonDimensions = (text, maxWidth, maxHeight, shouldShrinkHeight = false) => {
+            const words = text.split(' ');
+            const avgCharWidth = 8;
+            const textWidth = text.length * avgCharWidth;
+            const minPadding = 20;
+
+            let newWidth = textWidth + minPadding;
+            newWidth = Math.max(newWidth, 60);
+            newWidth = Math.min(newWidth, maxWidth);
+
+            const shouldWrap = textWidth > newWidth * 0.7 || words.length > 1;
+
+            let newHeight = maxHeight;
+            if (shouldShrinkHeight) {
+                newHeight = Math.max(25, maxHeight * 0.85);
+            }
+
+            let fontSize = Math.min(16, Math.max(12, newWidth / (text.length * 0.6)));
+
+            return {
+                width: newWidth,
+                height: newHeight,
+                fontSize: fontSize,
+                whiteSpace: shouldWrap ? 'normal' : 'nowrap',
+                lineHeight: shouldWrap ? '1.1' : 'normal',
+                padding: shouldWrap ? '6px 10px' : '8px 12px'
+            };
+        };
+
         const newDimensions = calculateButtonDimensions(
             nextText,
             maxNoSize.width,
             maxNoSize.height,
-            true // Always shrink height
+            true
         );
 
-        // Update No button with all properties at once
         setNoSize(prev => ({
             ...prev,
             ...newDimensions,
-            backgroundColor: 'red',
+            backgroundColor: `rgba(255, ${100 - blushLevel * 10}, ${100 - blushLevel * 10}, 0.8)`,
             transition: 'all 0.3s ease'
         }));
 
-        // Update text and index
         setText(nextText);
         setTextIndex(nextIndex);
     };
@@ -216,6 +215,7 @@ const DollsAnimation = () => {
             console.log('failed to send the response');
         }
     }
+
     const rejecting = async () => {
         try {
             const sent = await api.post('post/', hapana)
@@ -226,17 +226,20 @@ const DollsAnimation = () => {
     }
 
     const handleYes = (e) => {
-        setagreed(true)
-        sending()
+        triggerBlush();
+        setBlushLevel(10);
+        setTimeout(() => {
+            setAgreed(true);
+            sending();
+        }, 1500);
     };
-    
 
     const baseButtonStyle = {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         border: 'none',
-        borderRadius: '10px',
+        borderRadius: '20px',
         color: 'white',
         fontWeight: 'bold',
         cursor: 'pointer',
@@ -246,15 +249,23 @@ const DollsAnimation = () => {
         wordWrap: 'break-word',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+        fontFamily: '"Dancing Script", cursive, "Segoe UI", sans-serif'
     };
 
     if (agreed) {
-        return <Afteryes />
+        return <AfterYes />
     }
 
     return (
-        <div className='container'>
+        <div
+            className='container joy-container'
+            ref={containerRef}
+            style={{
+                background: blushLevel > 0
+                    ? `radial-gradient(circle at 50% 50%, rgba(255,182,193,${blushLevel * 0.1}), rgba(255,240,245,0.95))`
+                    : 'linear-gradient(135deg, #fff0f5, #ffe4e9)'
+            }}
+        >
             <audio
                 ref={audioRef}
                 src={audioFile}
@@ -262,13 +273,44 @@ const DollsAnimation = () => {
                 loop={false}
             />
 
-            <img
-                className='gif'
-                src={dollwait}
-                alt="Dolls kissing"
-                style={{ width: "200px" }}
-            />
-            <h1>Will you be my Valentine?</h1>
+            <div className="flower-display">
+                <img
+                    className='flower-main'
+                    src={currentFlower}
+                    alt="Flowers for Joy"
+                    style={{
+                        width: "220px",
+                        filter: blushLevel > 0 ? `hue-rotate(${blushLevel * 5}deg)` : 'none',
+                        transition: 'all 0.5s ease'
+                    }}
+                />
+                {showHearts && (
+                    <div className="heart-burst">
+                        {[...Array(15)].map((_, i) => (
+                            <span
+                                key={i}
+                                className="heart"
+                                style={{
+                                    animationDelay: `${i * 0.1}s`,
+                                    left: `${Math.random() * 100}%`,
+                                    animationDuration: `${1 + Math.random() * 2}s`
+                                }}
+                            >
+                                {['💖', '🌸', '🌹', '💐', '🌺'][i % 5]}
+                            </span>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <div className="blush-indicator" style={{ opacity: blushLevel * 0.1 }}>
+                <div className="blush-circle left"></div>
+                <div className="blush-circle right"></div>
+            </div>
+
+            <h1 className="question">Joy, will you be my Valentine? 💌</h1>
+            <p className="subtext">Every flower whispers your name...</p>
+
             <div className='buttons'>
                 <button
                     style={{
@@ -276,13 +318,16 @@ const DollsAnimation = () => {
                         width: `${yesSize.width}px`,
                         height: `${yesSize.height}px`,
                         fontSize: `${yesSize.fontSize}px`,
-                        backgroundColor: yesSize.backgroundColor,
-                        padding: yesSize.padding || '8px 16px'
+                        background: yesSize.backgroundColor,
+                        padding: yesSize.padding || '12px 24px',
+                        boxShadow: yesSize.boxShadow,
+                        transform: `scale(${1 + blushLevel * 0.02})`
                     }}
-                    className='yes'
+                    className='yes-button joy-yes'
                     onClick={handleYes}
+                    onMouseEnter={triggerBlush}
                 >
-                    Yes
+                    Yes 💖
                 </button>
                 <button
                     style={{
@@ -291,15 +336,31 @@ const DollsAnimation = () => {
                         height: `${noSize.height}px`,
                         fontSize: `${noSize.fontSize}px`,
                         backgroundColor: noSize.backgroundColor,
-                        padding: noSize.padding || '8px 16px',
+                        padding: noSize.padding || '10px 20px',
                         whiteSpace: noSize.whiteSpace || 'nowrap',
-                        lineHeight: noSize.lineHeight || '1.2'
+                        lineHeight: noSize.lineHeight || '1.2',
+                        opacity: 1 - (blushLevel * 0.05)
                     }}
-                    className='no'
+                    className='no-button joy-no'
                     onClick={handleNO}
                 >
                     {text}
                 </button>
+            </div>
+
+            <div className="flower-petals">
+                {[...Array(8)].map((_, i) => (
+                    <div
+                        key={i}
+                        className="petal"
+                        style={{
+                            animationDelay: `${i * 0.5}s`,
+                            background: blushLevel > 0
+                                ? `rgba(255, ${182 - blushLevel * 10}, 193, 0.7)`
+                                : 'rgba(255, 182, 193, 0.4)'
+                        }}
+                    ></div>
+                ))}
             </div>
         </div>
     );
