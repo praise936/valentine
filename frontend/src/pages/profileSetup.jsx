@@ -23,7 +23,7 @@ const AfterYes = () => {
                 <div className="blush-overlay"></div>
             </div>
             <h1 className="blush-text">Yay! Joy said YES! 💖</h1>
-            <p className="romantic-message">Every flower here blooms just for you, my love</p>
+            <p className="romantic-message">Every flower here blooms just for you, my crush</p>
 
             <div className="flower-gallery">
                 <img src={flower1} alt="Bouquet 1" className="gallery-flower" />
