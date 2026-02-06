@@ -22,7 +22,7 @@ const AfterYes = () => {
                 />
                 <div className="blush-overlay"></div>
             </div>
-            <h1 className="blush-text">Yay! Joy said YES! 💖</h1>
+            <h1 className="blush-text">Yay! Wachira said YES! 💖</h1>
             <p className="romantic-message">Every flower here blooms just for you, my crush</p>
 
             <div className="flower-gallery">
@@ -37,8 +37,8 @@ const AfterYes = () => {
 }
 
 const DollsAnimation = () => {
-    const ndio = { content: "Joy has agreed to be my Valentine! 🌸💖" }
-    const hapana = { content: "Joy is being shy... but we know she'll say yes! 😊" }
+    const ndio = { content: "Wachira has agreed to be my Valentine! 🌸💖" }
+    const hapana = { content: "Wachira is being shy... but we know she'll say yes! 😊" }
     const [agreed, setAgreed] = useState(false)
     const [blushLevel, setBlushLevel] = useState(0)
     const [currentFlower, setCurrentFlower] = useState(flower1)
@@ -308,7 +308,7 @@ const DollsAnimation = () => {
                 <div className="blush-circle right"></div>
             </div>
 
-            <h1 className="question">Joy, will you be my Valentine? 💌</h1>
+            <h1 className="question">Wachira, will you be my Valentine? 💌</h1>
             <p className="subtext">Every flower whispers your name...</p>
 
             <div className='buttons'>
