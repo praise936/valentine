@@ -6,9 +6,8 @@ import audioFile from '../assets/audio.mp3';
 // Import all the flower images
 import flower1 from '../assets/joy1.gif';  // First bouquet
 import flower2 from '../assets/joy2.gif';  // Second bouquet
-import flower3 from '../assets/joy3.gif';  // Third bouquet
-import flower4 from '../assets/joy4.jpeg'; // Special bouquet
-// import blushEffect from '../assets/blush-effect.gif'; // You might want to add a blush effect image
+import flower3 from '../assets/joy3.gif';  
+import flower4 from '../assets/joy4.jpeg'; 
 
 const AfterYes = () => {
     return (
@@ -43,6 +42,7 @@ const DollsAnimation = () => {
     const [blushLevel, setBlushLevel] = useState(0)
     const [currentFlower, setCurrentFlower] = useState(flower1)
     const [showHearts, setShowHearts] = useState(false)
+    const [name,setname] = useState("")
 
     const [text, setText] = useState('No');
     const [textIndex, setTextIndex] = useState(0);
@@ -55,6 +55,7 @@ const DollsAnimation = () => {
         'My heart beats for you',
         'Say yes, Joy! 💖',
     ];
+    
 
     const [yesSize, setYesSize] = useState({
         width: 100,
@@ -251,6 +252,9 @@ const DollsAnimation = () => {
         textOverflow: 'ellipsis',
         fontFamily: '"Dancing Script", cursive, "Segoe UI", sans-serif'
     };
+    const updatename = (e) => {
+        setname(e.target.value)
+    }
 
     if (agreed) {
         return <AfterYes />
@@ -266,6 +270,11 @@ const DollsAnimation = () => {
                     : 'linear-gradient(135deg, #fff0f5, #ffe4e9)'
             }}
         >
+            <input 
+            type="text" 
+            placeholder='Enter your name' 
+            onChange={updatename(e)}
+            />
             <audio
                 ref={audioRef}
                 src={audioFile}
@@ -308,7 +317,7 @@ const DollsAnimation = () => {
                 <div className="blush-circle right"></div>
             </div>
 
-            <h1 className="question">Wachira, will you be my Valentine? 💌</h1>
+            <h1 className="question">{name}, will you be my Valentine? 💌</h1>
             <p className="subtext">Every flower whispers your name...</p>
 
             <div className='buttons'>
