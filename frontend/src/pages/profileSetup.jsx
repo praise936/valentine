@@ -252,9 +252,9 @@ const DollsAnimation = () => {
         textOverflow: 'ellipsis',
         fontFamily: '"Dancing Script", cursive, "Segoe UI", sans-serif'
     };
-    const updatename = (e) => {
-        setname(e.target.value)
-    }
+    // const updatename = (e) => {
+    //     setname(e.target.value)
+    // }
 
     if (agreed) {
         return <AfterYes />
@@ -270,11 +270,8 @@ const DollsAnimation = () => {
                     : 'linear-gradient(135deg, #fff0f5, #ffe4e9)'
             }}
         >
-            <input 
-            type="text" 
-            placeholder='Enter your name' 
-            onChange={updatename(e)}
-            />
+            
+            
             <audio
                 ref={audioRef}
                 src={audioFile}
